@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     BTAdapter.startDiscovery();
                     Log.i("PRESSED BUTTON", "onCheckedChanged: on "+b);
                     int total = getRssiCounts(rssiList);
-                    textview.setText(total + " people may be too close.");
+                    textview.setText(total + " people maybe too close.");
                 } else{
                     unregisterReceiver(bRecv);
                     BTAdapter.cancelDiscovery();
@@ -107,7 +107,9 @@ public class MainActivity extends AppCompatActivity {
         int count = 0;
         Log.i("aaaa", list.size()+"");
         for(int i = 0; i < list.size(); i++){
-            if(list.get(i)>0){
+            int power = ((69-list.get(i))/(10*2));
+            double distance = Math.pow(10,power);
+            if(distance < 3.0){
                 count++;
             }
         }
