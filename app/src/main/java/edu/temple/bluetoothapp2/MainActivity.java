@@ -16,6 +16,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +37,7 @@ import org.altbeacon.beacon.Region;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private Beacon beacon;
@@ -43,13 +46,14 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
     TextView textview;
-
+    Boolean tgBtn;
     List<Integer> rssiList = new ArrayList<>();
 
     private final BroadcastReceiver bRecv = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            Log.d("Check", "Reciever on");
             if(BluetoothDevice.ACTION_FOUND.equals(action)){
                 Log.d("FOUND DEVICES", "GETTING RSSI");
                 int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,Short.MIN_VALUE);
@@ -65,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //
-
         BTAdapter = BluetoothAdapter.getDefaultAdapter();
         // Phone does not support Bluetooth so let the user know and exit.
         if (BTAdapter == null) {
@@ -87,16 +90,17 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
                 if(b){
+                    rssiList.clear();
                     registerReceiver(bRecv,filter);
                     BTAdapter.startDiscovery();
                     Log.i("PRESSED BUTTON", "onCheckedChanged: on "+b);
-                    int total = getRssiCounts(rssiList);
-                    textview.setText(total + " people maybe too close.");
                 } else{
                     unregisterReceiver(bRecv);
                     BTAdapter.cancelDiscovery();
                     Log.i("PRESSED BUTTON", "onCheckedChanged: off "+b);
                 }
+                int total = getRssiCounts(rssiList);
+                textview.setText(total + " people maybe too close.");
             }
         });
 
