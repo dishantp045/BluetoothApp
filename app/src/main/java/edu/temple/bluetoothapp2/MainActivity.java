@@ -84,18 +84,16 @@ public class MainActivity extends AppCompatActivity {
         }
         final ToggleButton scanBtn = findViewById(R.id.toggleButton);
         textview = findViewById(R.id.textView);
-
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        MainActivity.this.registerReceiver(bRecv,filter);
         scanBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
                 if(b){
                     rssiList.clear();
-                    registerReceiver(bRecv,filter);
                     BTAdapter.startDiscovery();
                     Log.i("PRESSED BUTTON", "onCheckedChanged: on "+b);
                 } else{
-                    unregisterReceiver(bRecv);
                     BTAdapter.cancelDiscovery();
                     Log.i("PRESSED BUTTON", "onCheckedChanged: off "+b);
                 }
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         int count = 0;
         Log.i("aaaa", list.size()+"");
         for(int i = 0; i < list.size(); i++){
-            int power = ((69-list.get(i))/(10*2));
+            int power = ((-69-list.get(i))/(10*2));
             double distance = Math.pow(10,power);
             if(distance < 3.0){
                 count++;
